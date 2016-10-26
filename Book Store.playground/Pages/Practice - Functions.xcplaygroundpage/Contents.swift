@@ -36,18 +36,73 @@ var bookStore = BookStore()
  
  */
 
+let books: [[String: String]] = [
+    ["author": "Dan Brown", "title": "Digital Fortress", "price": "9.99"],
+    ["author": "Dan Brown", "title": "Angels & Demons", "price": "17.00"],
+    ["author": "Dan Brown", "title": "The Da Vinci Code", "price": "9.99"],
+    ["author": "Dan Brown", "title": "Deception Point", "price": "17.00"],
+    ["author": "J.K. Rowling", "title": "Harry Potter and the Goblet of Fire", "price": "12.99"],
+    ["author": "J.K. Rowling", "title": "Harry Potter and the Goblet of Fire", "price": "12.99"],
+    ["author": "J.K. Rowling", "title": "Harry Potter and the Deathly Hallows", "price": "14.99"],
+    ["author": "詹宏志", "title": "旅行與讀書", "price": "12.00"],
+    ["author": "王宣一", "title": "國宴與家宴", "price": "7.99"],
+]
+
+
 // Use this
-//func distinctAuthors() -> Set<String> { ... }
+func distinctAuthors() -> Set<String> {
+    
+    var authors = Set<String>()
+    for book in books {
+        if !authors.contains(book["author"]!){
+            authors.insert(book["author"]!)
+        }
+    }
+    return authors
+}
 // or this
 //func distinctAuthors() -> [String] { ... }
+
 // then
-//bookStore.setDataSource(authorsGetter: distinctAuthors)
+bookStore.setDataSource(authorsGetter: distinctAuthors)
 
-//func totalBookPrice() -> Double { ... }
-//bookStore.setDataSource(priceCalculator: totalBookPrice)
+func totalBookPrice() -> Double {
+    
+    var totalBookPrice: Double = 0
+    for book in books{
+        let possiblePrice = Double(book["price"]!)
+        if let price = possiblePrice{
+            totalBookPrice += price
+        }
+        else{
+            totalBookPrice += 0
+        }
+    }
+    return totalBookPrice
+}
+bookStore.setDataSource(priceCalculator: totalBookPrice)
 
-//func getBook(at index: Int) -> (title: String, author: String, price: Double)? { return nil }
-//bookStore.setDataSource(bookGetter: getBook(at:))
+func getBook(at index: Int) -> (title: String, author: String, price: Double)?{
+    
+    guard index < books.count else {
+        return nil
+    }
+    let book = books[index]
+    guard let priceString = book["price"], let price = Double(priceString) else {
+        print("Cannot get price for book at index \(index): No price")
+        return nil
+    }
+    guard let title = book["title"] else {
+        print("Cannot get title for book at index \(index): No title")
+        return nil
+    }
+    guard let author = book["author"] else {
+        print("Cannot get author for book at index \(index): No author")
+        return nil
+    }
+    return (title, author, price)
+}
+bookStore.setDataSource(bookGetter: getBook(at:))
 
 /*:
 
