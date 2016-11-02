@@ -37,15 +37,47 @@ var bookStore = BookStore()
     If the index is out of bound, return `nil`.
 
  */
+let books: [[String: String]] = [
+    ["author": "Dan Brown", "title": "Digital Fortress", "price": "9.99"],
+    ["author": "Dan Brown", "title": "Angels & Demons", "price": "17.00"],
+    ["author": "Dan Brown", "title": "The Da Vinci Code", "price": "9.99"],
+    ["author": "Dan Brown", "title": "Deception Point", "price": "17.00"],
+    ["author": "J.K. Rowling", "title": "Harry Potter and the Goblet of Fire", "price": "12.99"],
+    ["author": "J.K. Rowling", "title": "Harry Potter and the Goblet of Fire", "price": "12.99"],
+    ["author": "J.K. Rowling", "title": "Harry Potter and the Deathly Hallows", "price": "14.99"],
+    ["author": "詹宏志", "title": "旅行與讀書", "price": "12.00"],
+    ["author": "王宣一", "title": "國宴與家宴", "price": "7.99"],
+]
+
+//print(Set(books.flatMap{$0["author"]}))
+//print(books.flatMap{$0["price"]}.flatMap{Double($0)}.reduce(0,+))
 
 // A closure which returns the name of authors in a set.
-//bookStore.setDataSource(authorsGetter: { () -> Set<String> in ... })
+bookStore.setDataSource(authorsGetter: { () -> Set<String> in return Set(books.flatMap{$0["author"]}) })
 
 // A closure which returns the totoal price of books to purchase
-//bookStore.setDataSource(priceCalculator: { () -> Double in return 0 })
+bookStore.setDataSource(priceCalculator: { () -> Double in return books.flatMap{$0["price"]}.flatMap{Double($0)}.reduce(0,+) })
 
 // A closure which returns the number of books and another closure returns a book by index
-//bookStore.setDataSource(bookGetter: { (bookIndex) -> Book? in return nil })
+bookStore.setDataSource(bookGetter: { (bookIndex) -> Book? in
+    guard bookIndex < books.count else {
+        return nil
+    }
+    let book = books[bookIndex]
+    guard let priceString = book["price"], let price = Double(priceString) else {
+        print("Cannot get price for book at index \(bookIndex): No price")
+        return nil
+    }
+    guard let title = book["title"] else {
+        print("Cannot get title for book at index \(bookIndex): No title")
+        return nil
+    }
+    guard let author = book["author"] else {
+        print("Cannot get author for book at index \(bookIndex): No author")
+        return nil
+    }
+    return (title, author, price)}
+)
 
 /*:
 
